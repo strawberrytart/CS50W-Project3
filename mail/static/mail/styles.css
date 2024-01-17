@@ -1,0 +1,69 @@
+textarea {
+    min-height: 400px;
+}
+
+div#emails-view > div{
+    border: 1px black solid;
+}
+
+div#emails-view > div.read-false{
+    background-color: grey;
+}
+
+p{
+    white-space: pre-wrap;
+}
+
+@keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    50% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    75% {
+        opacity: 0;
+        height: 100%;
+        line-height: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+        line-height: 0px;
+        padding: 0px;
+        margin-bottom: 0px;
+    }
+}
+
+
+.alert {
+    padding: 20px;
+    margin-bottom: 10px;
+    animation-name: hide;
+    animation-duration: 1.5s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+.archive {
+    padding: 20px;
+    margin-bottom: 10px;
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+#email-body{
+    min-height: 20vh;
+}
