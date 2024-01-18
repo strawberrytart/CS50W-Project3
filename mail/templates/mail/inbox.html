@@ -23,10 +23,24 @@
     <div id="success-alert" class="archive alert-success alert-dismissible fade show" role="alert">
     </div>
 
-    <div id="emails-view">
+    <div id="emails-view" class="container">
     </div>
 
     <div id="detail-view">
+        <div class="container" id="email_div">
+            <div class="row" id="email-subject"></div>
+            <div class="row" id="email-sender"></div>
+            <div class="row">
+                <div class="col-6 pl-0" id="email-recipients"></div>
+                <div class="col-6 text-right" id ="email-timestamp"></div>
+            </div>
+            <div class="row py-5" id="email-body"></div>
+            <div class="row">
+                <button class="btn btn-danger mr-3" id="archive-button">Archive</button>
+                <button class="btn btn-danger mr-3" id="unarchive-button">Unarchive</button>
+                <button class="btn btn-primary" id="reply-button">Reply</button>
+            </div>
+        </div>
     </div>
 
     <div id="compose-view">

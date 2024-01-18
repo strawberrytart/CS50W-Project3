@@ -6,12 +6,30 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#unarchive-alert').style.display = 'none';
   document.querySelector('#success-alert').style.display='none';
 
-  // Use buttons to toggle between views
+  //Use buttons to toggle between views
   //Get the element based on the id and pay attention for 'click' and run function load_mailbox
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
+
+  //Attach event handler to #unarchive-button to pay attention to click and run function
+  document.querySelector('#unarchive-button').addEventListener('click', function(){
+    unarchiveEmail(this.dataset.id)
+    setTimeout(function(){
+      load_mailbox('inbox');
+    }, 50);
+    unarchiveAlert();
+  })
+
+  //Attach event handler to #archive-button to pay attention to click and run function
+  document.querySelector('#archive-button').addEventListener('click', function(){
+    archiveEmail(this.dataset.id)
+    setTimeout(function(){
+      load_mailbox('inbox');
+    }, 50);
+    archiveAlert();
+  })
 
   //When the form is submitted, send a POST request to /emails route
   document.querySelector('form').onsubmit = function(){
@@ -151,108 +169,49 @@ function view_email(email_id,mailbox){
   fetch(`/emails/${email_id}`)
   .then(response => response.json())
   .then(email => {
-
+    console.log(email)
     //Show detail view and hide other views
     document.querySelector('#emails-view').style.display = 'none';
     document.querySelector('#detail-view').style.display = 'block';
 
-    //Create a container for the email. add necessary classes and id, and append it to the #detail-view div
-    const email_div = document.createElement('div');
-    email_div.classList.add("container");
-    email_div.setAttribute('id','email_div'); 
-    document.querySelector('#detail-view').append(email_div)
-
-    //Create a div for the email subject, add classes, set the inner HTML and append it to the email container
-    const row_subject = document.createElement('div')
-    row_subject.classList.add("row");
-    row_subject.innerHTML = `<h2>${email['subject']}</h2>`
-    document.querySelector('#email_div').append(row_subject)
-
-    //Create a div for the sender, add classes, set inner HTML and append it to the email container
-    const row_sender = document.createElement('div')
-    row_sender.classList.add("row");
-    row_sender.innerHTML = `From: ${email['sender']}`
-    document.querySelector('#email_div').append(row_sender)
-
-    //Create a row for the recipient and time stamp
-    const row_container = document.createElement('div')
-    row_container.classList.add("row")
-    row_container.setAttribute('id', 'row_container')
-    document.querySelector('#email_div').append(row_container)
-
-    //Create div for recipient
-    const row_recipients = document.createElement('div')
-    row_recipients.classList.add("col-6", "pl-0")
+    document.querySelector('#email-subject').innerHTML = `<h2>${email['subject']}</h2>`
+    document.querySelector('#email-sender').innerHTML = `From: ${email['sender']}`
     let recipient_string = ""; 
     for (i = 0; i < email['recipients'].length; i++){
         recipient_string = recipient_string + email['recipients'][i] + ", "
     }
-    row_recipients.innerHTML = `To: ${recipient_string}`
-    document.querySelector('#row_container').append(row_recipients)
+    document.querySelector('#email-recipients').innerHTML = `To: ${recipient_string}`
+    document.querySelector('#email-timestamp').innerHTML = email['timestamp'];
+    document.querySelector('#email-body').innerHTML = `<p> ${email["body"]} </p>`  
 
-    //Create div for timestamp
-    const row_timestamp = document.createElement('div');
-    row_timestamp.classList.add("col-6", "text-right");
-    row_timestamp.innerHTML = email['timestamp'];
-    document.querySelector('#row_container').append(row_timestamp)
-
-    //Create a div for the email body and append it to the email container
-    const row_body = document.createElement('div');
-    row_body.setAttribute("id","email-body");
-    row_body.classList.add("row", "py-5")
-    row_body.innerHTML = `<p> ${email["body"]} </p>`  
-    document.querySelector('#email_div').append(row_body)
-
-    //Create a container for the buttons
-    const row_button = document.createElement('div');
-    row_button.classList.add("row")
-    document.querySelector('#email_div').append(row_button)
-
-    //If the mailbox is not sent, which will be archive or inbox
+    //If the mailbox is not Sent, which will be Archive or Inbox
     if (!(mailbox == "sent")){
       //If email is archived, show unarchive button
       if (email["archived"]){
         console.log(email["archived"])
-        const unarchive_button = document.createElement('button');
-        unarchive_button.classList.add("btn", "btn-danger","mr-3")
-        unarchive_button.innerHTML = "Unarchive"
-        row_button.append(unarchive_button)
-        unarchive_button.addEventListener('click', function(){
-          const email_id = email['id']
-          unarchiveEmail(email_id)
-          setTimeout(function(){
-            load_mailbox('inbox');
-          }, 50);
-          unarchiveAlert();
-        })
-  
+        document.querySelector('#archive-button').style.display = 'none';
+        document.querySelector('#unarchive-button').style.display = 'block';
+        document.querySelector('#unarchive-button').setAttribute("data-id",email['id']);
       }
       //If email is unarchived, show archive button
       else{
         console.log(email["archived"])
-        const archive_button = document.createElement('button');
-        archive_button.classList.add("btn", "btn-danger", "mr-3")
-        archive_button.innerHTML = "Archive"
-        row_button.append(archive_button)
-        archive_button.addEventListener('click', function(){
-          const email_id = email['id']
-          archiveEmail(email_id)
-          setTimeout(function(){
-            load_mailbox('inbox');
-          }, 50);
-          archiveAlert();
-        })
+        document.querySelector('#unarchive-button').style.display = 'none';
+        document.querySelector('#archive-button').style.display = 'block';
+        document.querySelector('#archive-button').setAttribute("data-id",email['id']);
       }
     }
+    //If mailbox is Sent, don't show archive buttons
+    else{
+      document.querySelector('#unarchive-button').style.display = 'none';
+      document.querySelector('#archive-button').style.display = 'none';
+    }
 
-    //Create a reply button
-    const reply_button = document.createElement('button');
-    reply_button.classList.add("btn", "btn-primary")
-    reply_button.innerHTML = "Reply"
-    row_button.append(reply_button);
-    reply_button.addEventListener('click', function(){
+    //Attach event handler to #reply to pay attention to click and run function
+    document.querySelector('#reply-button').addEventListener('click', function(){
       reply_email(email)
     });
+
   })
 
   //Mark an email as read/unread but sending a PUT request 
@@ -284,9 +243,9 @@ function unarchiveEmail(email_id){
   })
 }
 
-//
+//Hide the detail-view
 function clearDetailEmailView(){
-  document.querySelector('#detail-view').innerHTML = "";
+  document.querySelector('#detail-view').style.display = 'none';
 }
 
 
@@ -317,23 +276,24 @@ function load_mailbox(mailbox) {
       //Create a div for sender, set class="col", set inner HTML
       child_element_sender = document.createElement('div');
       child_element_sender.innerHTML = email['sender'];
-      child_element_sender.classList.add("col-3");
+      child_element_sender.classList.add("col-lg-3", "col-12", "email-view-sender");
 
       //Create a div for subject, set class="col", set inner HTML
       child_element_subject = document.createElement('div');
       child_element_subject.innerHTML = email['subject'];
-      child_element_subject.classList.add("col-6");
+      child_element_subject.classList.add("col-md-6", "col-12","email-view-subject");
 
       //Create a div for title, set class="col", set inner HTML
       child_element_timestamp = document.createElement('div');
       child_element_timestamp.innerHTML = email['timestamp'];
-      child_element_timestamp.classList.add("col-3");
+      child_element_timestamp.classList.add("col-lg-3", "col-12","col-md-6", "email-view-timestamp");
 
       document.querySelector('#emails-view').append(parent_element);
       document.querySelector(`#div-${email['id']}`).append(child_element_sender);
       document.querySelector(`#div-${email['id']}`).append(child_element_subject);
       document.querySelector(`#div-${email['id']}`).append(child_element_timestamp);
 
+      //Attach an event handler click to the parent element, load the email in detail when clicked.
       parent_element.addEventListener('click', function(){
         const email_id = email['id']
         view_email(email_id, mailbox)

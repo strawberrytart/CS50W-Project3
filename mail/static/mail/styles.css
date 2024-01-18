@@ -6,6 +6,10 @@ div#emails-view > div{
     border: 1px black solid;
 }
 
+div#emails-view > div{
+    cursor: pointer;
+}
+
 div#emails-view > div.read-false{
     background-color: grey;
 }
@@ -66,4 +70,33 @@ p{
 
 #email-body{
     min-height: 20vh;
+}
+
+@media only screen and (max-width: 600px) {
+    div.email-view-timestamp{
+        font-size: 3vw;
+    }
+
+    div.email-view-sender{
+        font-size: large;
+        font-weight: bold;
+    }
+
+}
+
+@media only screen and (min-width: 600px) {
+    div.email-view-sender{
+        font-size: large;
+        font-weight: bold;
+    }
+
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    div.email-view-sender{
+        font-size: 1rem;
+        font-weight: normal;
+    }
+
 }

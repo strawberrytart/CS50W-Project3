@@ -31,17 +31,15 @@ def compose(request):
 
     # Check recipient emails
     data = json.loads(request.body)
+    #Split the retrived string into a list of substrings using ","
+    #email.strip() removes leading and trailing whitespaces and puts them in a list
     emails = [email.strip() for email in data.get("recipients").split(",")]
+    #If email is empty
     if emails == [""]:
         return JsonResponse({
             "error": "At least one recipient required."
         }, status=400)
     
-    if data.get("subject") == "":
-        return JsonResponse({
-            "error": "Subject required"
-        }, status = 400)
-
     # Convert email addresses to users
     recipients = []
     for email in emails:
@@ -56,12 +54,12 @@ def compose(request):
     # Get contents of email
     subject = data.get("subject", "")
     body = data.get("body", "")
-    print(body)
 
     # Create one email for each recipient, plus sender
     users = set()
     users.add(request.user)
     users.update(recipients)
+    print(users)
     for user in users:
         email = Email(
             user=user,
